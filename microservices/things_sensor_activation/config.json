@@ -1,0 +1,24 @@
+{
+    "num_of_devices": 3,
+    "device_list": [
+        {
+            "name": "1080P Web Camera: 1080P Web Cam",
+            "channel": [
+                0
+            ]
+        },
+        {
+            "name": "Intel(R) RealSense(TM) Depth Ca",
+            "channel": [
+                2,
+                4
+            ]
+        },
+        {
+            "name": "UVC Camera (046d:0825)",
+            "channel": [
+                0
+            ]
+        }
+    ]
+}

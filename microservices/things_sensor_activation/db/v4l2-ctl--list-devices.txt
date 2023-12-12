@@ -1,0 +1,32 @@
+bcm2835-codec-decode (platform:bcm2835-codec):
+        /dev/video10
+        /dev/video11
+        /dev/video12
+        /dev/media3
+
+bcm2835-isp (platform:bcm2835-isp):
+        /dev/video13
+        /dev/video14
+        /dev/video15
+        /dev/video16
+        /dev/media1
+
+Intel(R) RealSense(TM) Depth Ca (usb-0000:01:00.0-1):
+        /dev/video0
+        /dev/video1
+        /dev/video2
+        /dev/video3
+        /dev/video4
+        /dev/video5
+        /dev/media0
+        /dev/media2
+
+1080P Web Camera: 1080P Web Cam (usb-0000:01:00.0-1.2):
+        /dev/video6
+        /dev/video7
+        /dev/media4
+
+UVC Camera (046d:0825) (usb-0000:01:00.0-1.4):
+        /dev/video8
+        /dev/video9
+        /dev/media5
