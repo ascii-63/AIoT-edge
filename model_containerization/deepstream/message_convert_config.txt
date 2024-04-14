@@ -1,0 +1,12 @@
+[location]
+id="0000"
+location=21.005453;105.8451935;48.15574793
+
+[model]
+id="0001"
+description="Model ID 0001: Human and Vehicle detection"
+
+[camera]
+type="RGB"
+id="0002"
+description="Cam ID 0002: RGB Camera"

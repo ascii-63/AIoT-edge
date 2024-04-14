@@ -1,0 +1,78 @@
+{
+    "message_id": "0000-0001-0002-000000",
+    "timestamp": "2023-12-25T07:38:42.491",
+    "location": {
+        "id": "0000",
+        "lat": 21.005453,
+        "lon": 105.8451935,
+        "alt": 48.15574793
+    },
+    "model": {
+        "id": "0001",
+        "description": "Model ID 0001: Human and Vehicle detection"
+    },
+    "camera": {
+        "id": "0002",
+        "type": "RGB",
+        "description": "Cam ID 0002: RGB Camera"
+    },
+    "number_of_objects": 3,
+    "object_list": [
+        {
+            "Human": {
+                "id": "01",
+                "gender": "Male",
+                "age": "20",
+                "bbox": {
+                    "topleftx": 32,
+                    "toplefty": 0,
+                    "bottomrightx": 177,
+                    "bottomrighty": 0
+                }
+            }
+        },
+        {
+            "Human": {
+                "id": "02",
+                "gender": "Female",
+                "age": "30",
+                "bbox": {
+                    "topleftx": 35,
+                    "toplefty": 0,
+                    "bottomrightx": 145,
+                    "bottomrighty": 0
+                }
+            }
+        },
+        {
+            "Vehicle": {
+                "id": "03",
+                "type": "Personal car",
+                "brand": "BMW",
+                "color": "Black",
+                "Licence": "29A-12345",
+                "bbox": {
+                    "topleftx": 345,
+                    "toplefty": 0,
+                    "bottomrightx": 108,
+                    "bottomrighty": 20
+                }
+            }
+        }
+    ],
+    "number_of_events": 2,
+    "event_list": [
+        {
+            "human_event": {
+                "object_id": "01",
+                "type": "EVENT_HUMAN_RUN"
+            },
+            "vehicle_event": {
+                "object_id": "03",
+                "type": "EVENT_VEHICLE_PARK"
+            }
+        }
+    ],
+    "image_URL": "https://example.com",
+    "video_URL": "https://example.com"
+}
