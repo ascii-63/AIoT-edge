@@ -1,0 +1,27 @@
+{
+	"workbench.colorCustomizations": {
+		"activityBar.activeBackground": "#4CAF50",
+		"activityBar.background": "#4CAF50",
+		"activityBar.foreground": "#FFFFFF",
+		"activityBar.inactiveForeground": "#FFFFFF99",
+		"activityBarBadge.background": "#388E3C",
+		"activityBarBadge.foreground": "#FFFFFF",
+		"commandCenter.border": "#FFFFFF99",
+		"sash.hoverBorder": "#4CAF50",
+		"statusBar.background": "#388E3C",
+		"statusBar.foreground": "#FFFFFF",
+		"statusBarItem.hoverBackground": "#43A047",
+		"statusBarItem.remoteBackground": "#4CAF50",
+		"statusBarItem.remoteForeground": "#FFFFFF",
+		"titleBar.activeBackground": "#4CAF50",
+		"titleBar.activeForeground": "#FFFFFF",
+		"titleBar.inactiveBackground": "#4CAF5099",
+		"titleBar.inactiveForeground": "#FFFFFF99"
+	},
+	"peacock.remoteColor": "#4CAF50",
+    "rust-analyzer.linkedProjects": [
+		"./Cargo.toml",
+		"./Cargo.toml"
+	],
+	"rust-analyzer.showUnlinkedFileNotification": false
+}
