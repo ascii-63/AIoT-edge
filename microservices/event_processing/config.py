@@ -4,7 +4,13 @@ VIDEO_EXTENTION = '.mp4'
 ENV_FILE_PATH = '.env'
 CFG_FILE_PATH = 'message_config.txt'
 
-GOOGLEAPI_URL_START = 'https://storage.googleapis.com/'
+DEFAULT_S3_URL = 'https://[].s3.ap-southeast-1.amazonaws.com/'
+BUCKET_BRACKET = '[]'
+
+# In the person object of model message, these field index is empty/not useable
+PERSON_MESSAGE_FIELD_REMOVE_LIST = [6, 10, 11]
+
+COLON_UNICODE = '%3A'
 
 ##########################################
 

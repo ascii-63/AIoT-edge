@@ -1,13 +1,13 @@
-from google.cloud import storage
 import pika
-import json
+import boto3
+import numpy as np
 
 import system
 import config
 
 
 def getImageURL(_timestamp_str: str, _image_url_start: str) -> str:
-    """Get Image Public URL from Google Storage with a specific timestamp"""
+    """Get image public URL from S3 with a specific timestamp"""
 
     image_url = _image_url_start
 
@@ -19,33 +19,37 @@ def getImageURL(_timestamp_str: str, _image_url_start: str) -> str:
 
 
 def getVideoURL(_timestamp_str: str, _video_url_start: str) -> str:
-    """Get Image Public URL from Google Storage with a specific timestamp"""
-    return None
+    """Get video Public URL from S3 with a specific timestamp"""
+
+    video_url = _video_url_start
+
+    timestamp_str = system.convertUTC0ToUTC7(_timestamp_str)
+    timestamp_str.replace(':', config.COLON_UNICODE)
+    video_url = video_url + timestamp_str + config.VIDEO_EXTENTION
+
+    return video_url
 
 
-def singleBlobUpload(_bucket_name: str, _source_file_name: str, _destination_blob: str) -> bool:
+def singleBinaryObjectUpload(_bucket: str, _src_bytes: bytes, _destination_obj: str) -> bool:
     """
     Uploads a file to the bucket:
-    _bucket_name: The ID of your GCS bucket
-    _source_file_name: The path to the file to upload
-    _destination_blob: The path to the file in GCS bucket
+    #     _bucket: S3 bucket name
+    #     _src_bytes: Binary form of object (image/JPEG or video/MP4)
+    #     _destination_obj: The path to the object in S3 bucket
     """
 
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(_bucket_name)
-    destination_blob_name = _destination_blob
-    blob = bucket.blob(destination_blob_name)
-
-    generation_match_precondition = 0
-
+    client = boto3.client('s3')
     try:
-        blob.upload_from_filename(
-            _source_file_name, if_generation_match=generation_match_precondition)
+        res = client.put_object(
+            Bucket=_bucket,
+            Key=_destination_obj,
+            Body=_src_bytes)
     except Exception as e:
-        print(f"Error when upload {_source_file_name} to bucket: {e}")
+        print(f"Error when upload to S3: {e}")
         return False
 
-    print(f"File {_source_file_name} uploaded to bucket: {destination_blob_name}")
+    if res == None:
+        return False
     return True
 
 

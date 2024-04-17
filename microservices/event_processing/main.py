@@ -13,15 +13,13 @@ import parsers
 import system
 
 
-remote_amqp_url = None
-remote_queue_name = None
+cloud_amqp_url = None
+cloud_queue_name = None
 
 bucket_name = None
 
-local_image_dir = None
-local_video_dir = None
-cloud_image_dir = None
-cloud_video_dir = None
+s3_image_dir = None
+s3_video_dir = None
 
 image_url_start = None
 video_url_start = None
