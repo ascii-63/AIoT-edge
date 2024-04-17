@@ -1,6 +1,5 @@
 import pika
 import boto3
-import numpy as np
 
 import system
 import config
@@ -37,9 +36,9 @@ def singleBinaryObjectUpload(_bucket: str, _src_bytes: bytes, _destination_obj: 
     #     _src_bytes: Binary form of object (image/JPEG or video/MP4)
     #     _destination_obj: The path to the object in S3 bucket
     """
-
-    client = boto3.client('s3')
     try:
+        client = boto3.client('s3')
+
         res = client.put_object(
             Bucket=_bucket,
             Key=_destination_obj,
