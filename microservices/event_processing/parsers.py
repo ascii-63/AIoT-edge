@@ -12,7 +12,8 @@ def envFileParser(_env_file_path: str):
     result,
     cloud_amqp_url, cloud_amqp_queue,
     bucket_name, s3_image_dir, s3_video_dir,
-    image_url_start, video_url_start
+    image_url_start, video_url_start,
+    rtsp_url
     """
     try:
         with open(_env_file_path) as f:
@@ -33,6 +34,8 @@ def envFileParser(_env_file_path: str):
     s3_image_dir = os.environ.get('S3_IMAGE_DIR')
     s3_video_dir = os.environ.get('S3_VIDEO_DIR')
 
+    rtsp_url = os.environ.get('RTSP_URL')
+
     image_url_start = config.DEFAULT_S3_URL.replace(
         config.BUCKET_BRACKET, bucket_name) + '/' + s3_image_dir + '/'
 
@@ -49,10 +52,11 @@ def envFileParser(_env_file_path: str):
         or s3_video_dir is None
         or image_url_start is None
         or video_url_start is None
+        or rtsp_url is None
     ):
-        return False, None, None, None, None, None, None, None
+        return False, None, None, None, None, None, None, None, None
 
-    return True, cloud_amqp_url, cloud_amqp_queue, bucket_name, s3_image_dir, s3_video_dir, image_url_start, video_url_start
+    return True, cloud_amqp_url, cloud_amqp_queue, bucket_name, s3_image_dir, s3_video_dir, image_url_start, video_url_start, rtsp_url
 
 
 def configFileParser(_cfg_file_path: str):

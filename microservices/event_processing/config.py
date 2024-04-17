@@ -1,5 +1,6 @@
 IMAGE_EXTENTION = '.jpg'
 VIDEO_EXTENTION = '.mp4'
+VIDEO_LENGTH_SEC = 2
 
 ENV_FILE_PATH = '.env'
 CFG_FILE_PATH = 'message_config.txt'
@@ -11,6 +12,7 @@ BUCKET_BRACKET = '[]'
 PERSON_MESSAGE_FIELD_REMOVE_LIST = [6, 10, 11]
 
 COLON_UNICODE = '%3A'
+
 
 ##########################################
 
