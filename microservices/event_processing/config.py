@@ -8,6 +8,14 @@ CFG_FILE_PATH = 'message_config.txt'
 DEFAULT_S3_URL = 'https://[].s3.ap-southeast-1.amazonaws.com/'
 BUCKET_BRACKET = '[]'
 
+DEFAULT_LOCAL_RABBITMQ_HOST = '192.168.0.201'
+DEFAULT_LOCAL_RABBITMQ_PORT = 5672
+DEFAULT_LOCAL_RABBITMQ_VH = '/'
+DEFAULT_LOCAL_RABBITMQ_USER = 'admin'
+DEFAULT_LOCAL_RABBITMQ_PWD = 'admin'
+DEFAULT_LOCAL_RABBITMQ_MSG_QUEUE = 'message'
+
+MAX_MESSAGE_ID = 999999
 # In the person object of model message, these field index is empty/not useable
 PERSON_MESSAGE_FIELD_REMOVE_LIST = [6, 10, 11]
 
