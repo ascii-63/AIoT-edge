@@ -7,7 +7,7 @@
 
 ## Build image:
 ```bash
-docker build
+docker build -t ds-yolo-v8:v1.0 .
 ```
 
 ## Run image:
