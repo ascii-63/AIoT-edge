@@ -348,7 +348,7 @@ def main(args):
 
     caps = Gst.ElementFactory.make("capsfilter", "filter")
     caps.set_property(
-        "caps", Gst.Caps.from_string("video/x-raw(memory:NVMM), format=RGBA")
+        "caps", Gst.Caps.from_string("video/x-raw(memory:NVMM), format=I420")
     )
 
     #############################
@@ -433,6 +433,9 @@ def main(args):
     # Set propertie UDP sink for rtsp out
     updsink_port_num = 5400
     sink = Gst.ElementFactory.make("udpsink", "udpsink")
+    if not sink:
+        sys.stderr.write("[ERROR] Unable to create udpsink")
+    
     sink.set_property("host", "224.224.255.255")
     sink.set_property("port", updsink_port_num)
     sink.set_property("async", False)
