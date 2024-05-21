@@ -28,7 +28,7 @@ RUN curl -O -L https://github.com/NVIDIA-AI-IOT/deepstream_python_apps/releases/
 RUN pip install ./pyds-1.1.8-py3-none-linux_aarch64.whl
 
 # Copy model/engine
-COPY ./model__engine/Deepstream-Yolo /opt/nvidia/deepstream/deepstream/sources/deepstream_python_apps/apps/model__engine/Deepstream-Yolo
+COPY ./model__engine/DeepStream-Yolo /opt/nvidia/deepstream/deepstream/sources/deepstream_python_apps/apps/model__engine/Deepstream-Yolo
 # Copy deepstream app
 COPY ./deepstream /opt/nvidia/deepstream/deepstream/sources/deepstream_python_apps/apps/ds_multi-rtsp_amqp
 
