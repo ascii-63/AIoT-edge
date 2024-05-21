@@ -549,7 +549,7 @@ def main(args):
 
     # start steaming
     server = GstRtspServer.RTSPServer.new()
-    server.props.service = "%d" % config.RTSP_OUT_PORT
+    server.props.service = "%d" % int(config.RTSP_OUT_PORT)
     server.attach(None)
 
     factory = GstRtspServer.RTSPMediaFactory.new()
