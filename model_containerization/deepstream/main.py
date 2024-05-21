@@ -481,8 +481,8 @@ def main(args):
 
     #############################
 
-    sink.set_property("sync", config.SINK_SYNC)
-    sink.set_property("qos", config.SINK_QOS)
+    # sink.set_property("sync", config.SINK_SYNC)
+    # sink.set_property("qos", config.SINK_QOS)
 
     if not is_aarch64():
         # Use CUDA unified memory in the pipeline so frames
