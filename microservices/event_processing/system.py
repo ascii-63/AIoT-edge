@@ -31,7 +31,7 @@ def searchFileInDirectory(_directory: str, _file_name: str):
 def convertUTC0ToUTC7(timestamp):
     """Convert ts str from UTC+0 to UTC+7"""
 
-    dt_utc0 = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+    dt_utc0 = datetime.strptime(timestamp[:-1], '%Y-%m-%dT%H:%M:%S.%f')
 
     utc0 = timedelta(hours=0)
     utc7 = timedelta(hours=7)

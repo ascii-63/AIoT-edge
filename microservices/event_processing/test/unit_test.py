@@ -1,36 +1,38 @@
 import cv2
-from datetime import datetime, timedelta
+import boto3
+import io
+import numpy as np
 
-RTSP_URL = 'rtsp://192.168.0.202:8554/ds-test'
-is_first_frame = True
-start_time = None
+# Initialize S3 client
+s3 = boto3.client('s3')
 
-cap = cv2.VideoCapture(
-    RTSP_URL
-)
+# Read MP4 video using cv2
+video_capture = cv2.VideoCapture('video_1mb.mp4')
 
-while (cap.isOpened()):
-    ret, frame = cap.read()
-
-    if ret:
-        if is_first_frame:
-            is_first_frame = False
-            start_time = datetime.now()
-            print(f"\n********** START **********\n")
-
-        title = 'Frame'
-        cv2.imshow(winname=title, mat=frame)
-
-        timestamp_ms = cap.get(cv2.CAP_PROP_POS_MSEC)
-        print(
-            f"Frame with timestamp: {start_time + timedelta(milliseconds=int(timestamp_ms))}")
-        print(f"Current timestamp: {datetime.now()}\n")
-
-    # Press 'q' to exit
-        if cv2.waitKey(25) & 0xFF == ord('q'):
-            break
-    else:
+# Read video frame by frame and store bytes in memory
+buffer = io.BytesIO()
+while True:
+    ret, frame = video_capture.read()
+    if not ret:
         break
+    # Convert frame to bytes
+    _, encoded_frame = cv2.imencode('.jpg', frame)
+    print(encoded_frame)
+    buffer.write(encoded_frame.tobytes())
 
-cap.release()
-cv2.destroyAllWindows()
+# Reset buffer position before uploading
+buffer.seek(0)
+
+try:
+    client = boto3.client('s3')
+
+    res = client.put_object(
+        Bucket="ivsr-aiot",
+        Key="videos/sample_video.mp4",
+        Body=buffer)
+except Exception as e:
+    print(f"Error when upload to S3: {e}")
+
+if res == None:
+    print(f"Failed")
+print("Passed")

@@ -1,13 +1,5 @@
-from google.cloud import storage
-
-import sys
-import os
 import pika
 import json
-from datetime import datetime, timedelta
-import time
-import cv2
-import numpy as np
 
 import cloud
 import config
@@ -26,6 +18,8 @@ s3_video_dir = None
 
 image_url_start = None
 video_url_start = None
+
+rtsp_url = None
 
 ##################################
 
@@ -85,16 +79,38 @@ def getTimestampFromMessage(_message: str) -> str:
     return timestamp_str
 
 
-def S3ImageUpload(_bucket_name: str, _image: np.ndarray) -> bool:
-    """Upload image `np.ndarray` to AWS S3 bucket"""
+def streamHandle(_timestamp: str) -> bool:
+    """
+    Capture, upload image and video to AWS S3, return `True` if successful
+    """
 
-    pass
+    image_bytes = streams.imageCapture_toBytes()
+    if image_bytes is None:
+        print(">_ None")
+        return False
 
+    # video_file = str(config.TEMP_VIDEO_DIR + '/' + config.TEMP_VIDEO_FILE_NAME)
+    # os.remove(video_file)
 
-def S3VideoUpload(_bucket_name: str, _video: list) -> bool:
-    """Upload video `list` of `np.ndarray` to AWS S3 bucket"""
+    # if streams.videoCapture_toFile() == None:
+    #     return False
 
-    pass
+    # if not system.searchFileInDirectory(config.TEMP_VIDEO_DIR, config.TEMP_VIDEO_FILE_NAME):
+    #     return False
+
+    image_des = s3_image_dir + '/' + _timestamp + '.jpg'
+    video_des = s3_video_dir + '/' + _timestamp + '.mp4'
+
+    img_re = cloud.singleBinaryObjectUpload(
+        bucket_name, image_bytes, image_des)
+    # vid_re = cloud.singleVideoFileUpload(
+    #     bucket_name, video_file, video_des)
+    vid_re = True
+
+    if (not img_re) or (not vid_re):
+        return False
+
+    return True
 
 
 def rawMessageParsing(_raw_msg: str):
@@ -130,7 +146,7 @@ def rawMessageParsing(_raw_msg: str):
 
     ###########################
 
-    events_data = data["events"]
+    # events_data = data["events"]
     events_list = []
 
     pass
@@ -140,7 +156,7 @@ def rawMessageParsing(_raw_msg: str):
     return timestamp_str, objects_list, events_list
 
 
-def messageGenerator(_raw_msg: str):
+def messageGenerator(_raw_msg: str) -> str:
     """
     Parse the raw JSON message in `str`, \n
     return the `str` message, which will be uploaded to CloudAMQP in JSON format.
@@ -150,6 +166,8 @@ def messageGenerator(_raw_msg: str):
     global model_id, model_description
     global camera_id, camera_type, camera_description
     global prev_message_id
+
+    global image_url_start, video_url_start
 
     timestamp_str, objects_list, events_list = rawMessageParsing(_raw_msg)
     num_obj = len(objects_list)
@@ -161,8 +179,8 @@ def messageGenerator(_raw_msg: str):
         camera_id + '-' + '{:06d}'.format(prev_message_id)
     prev_message_id += 1
 
-    image_url = cloud.getImageURL(timestamp_str)
-    video_url = cloud.getVideoURL(timestamp_str)
+    image_url = cloud.getImageURL(timestamp_str, image_url_start)
+    video_url = cloud.getVideoURL(timestamp_str, video_url_start)
 
     ###########################
 
@@ -189,7 +207,7 @@ def messageGenerator(_raw_msg: str):
         "number_of_events": num_event,
         "event_list": [],
         "image_URL": image_url,
-        "video_URL": video_url
+        # "video_URL": video_url
     }
 
     ###########################
@@ -232,36 +250,14 @@ def messageGenerator(_raw_msg: str):
     return json.dumps(message)
 
 
-def sendMessage(_message):
-    """Send a `str` message to the cloud RabbitMQ message broker"""
-
-    global cloud_amqp_url, cloud_queue_name
-
-    try:
-        # Create a connection to the remote AMQP server using the configuration
-        remote_connection_parameters = pika.URLParameters(cloud_amqp_url)
-        remote_connection = pika.BlockingConnection(
-            remote_connection_parameters)
-        remote_channel = remote_connection.channel()
-
-        # Publish the received message to the remote queue
-        remote_channel.basic_publish(
-            exchange='',
-            routing_key=cloud_queue_name,
-            body=_message
-        )
-
-        remote_connection.close()
-    except Exception as e:
-        print(f"Exception when send a message to cloud RabbitMQ")
-
-
 def messageProcessing():
     """
     Recive message from local RabbitMQ, then: \n
     1. Re-format it, then publish it to cloud RabbitMQ \n
     2. Get timestamp, create image and/or video with that timestamp, then send them to AWS S3 bucket
     """
+
+    global cloud_amqp_url, cloud_queue_name
 
     # Define the local AMQP server connection parameters
     local_connection_parameters = pika.ConnectionParameters(
@@ -282,7 +278,18 @@ def messageProcessing():
 
     # Define a callback function to process received messages
     def local_callback(ch, method, properties, body):
-        print(f"[WARN] Null local_callback function!")
+        timestamp = getTimestampFromMessage(body)
+        if timestamp == None:
+            return
+        print(f">_____  {timestamp}")
+        if not streamHandle(timestamp):
+            return
+
+        print(f">_____ PUB")
+        res = cloud.sendMessage(
+            messageGenerator(body), cloud_amqp_url, cloud_queue_name)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+        print(res)
 
     # Set up the consumer and specify the callback function
     local_channel.basic_consume(
@@ -295,8 +302,10 @@ def messageProcessing():
 
 
 if __name__ == '__main__':
-    if (not parsers.envFileParser() or not parsers.configFileParser()):
-        print(f'Error while parsing .env or message_config.txt file', file=sys.stderr)
-        sys.exit(1)
+    env_result, cloud_amqp_url, cloud_queue_name, bucket_name, s3_image_dir, s3_video_dir, image_url_start, video_url_start, rtsp_url = parsers.envFileParser(
+        config.ENV_FILE_PATH)
+
+    cfg_result, location_id, location_lat, location_lon, location_alt, model_id, model_description, camera_id, camera_type, camera_description, prev_message_id = parsers.configFileParser(
+        config.CFG_FILE_PATH)
 
     messageProcessing()

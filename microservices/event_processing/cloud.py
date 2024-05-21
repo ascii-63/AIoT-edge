@@ -10,10 +10,11 @@ def getImageURL(_timestamp_str: str, _image_url_start: str) -> str:
 
     image_url = _image_url_start
 
-    timestamp_str = system.convertUTC0ToUTC7(_timestamp_str)
+    timestamp_str = system.convertUTC0ToUTC7(_timestamp_str)+'Z'
     timestamp_str.replace(':', config.COLON_UNICODE)
     image_url = image_url + timestamp_str + config.IMAGE_EXTENTION
 
+    print(image_url)
     return image_url
 
 
@@ -43,6 +44,34 @@ def singleBinaryObjectUpload(_bucket: str, _src_bytes: bytes, _destination_obj: 
             Bucket=_bucket,
             Key=_destination_obj,
             Body=_src_bytes)
+    except Exception as e:
+        print(f"Error when upload to S3: {e}")
+        return False
+
+    if res == None:
+        return False
+    return True
+
+
+def singleVideoFileUpload(_bucket: str, _file: str, _des: str) -> bool:
+    """
+    Uploads a file to the bucket:
+        _bucket: S3 bucket name
+        _file: Path to file
+        _des: Path to the object in S3 bucket
+    """
+
+    if not (system.searchFileInDirectory(config.TEMP_VIDEO_DIR, _file)):
+        return False
+
+    try:
+        client = boto3.client('s3')
+
+        res = client.put_object(
+            Bucket=_bucket,
+            Key=_des,
+            Body=_file
+        )
     except Exception as e:
         print(f"Error when upload to S3: {e}")
         return False

@@ -3,6 +3,20 @@ import os
 import config
 
 
+def envGetRtspUrl(_env_file_path: str):
+    try:
+        with open(_env_file_path) as f:
+            for line in f:
+                if line.strip() and not line.strip().startswith("#"):
+                    key, value = line.strip().split("=", 1)
+                    os.environ[key] = value
+    except Exception as e:
+        raise Exception(e)
+
+    rtsp_url = os.environ.get('RTSP_URL')
+    return rtsp_url
+
+
 def envFileParser(_env_file_path: str):
     """Read and parse the .env file:
     - Parameters:
@@ -72,10 +86,10 @@ def configFileParser(_cfg_file_path: str):
     prev_message_idv
     """
 
-    location_id, location_lat, location_lon, location_alt
-    model_id, model_description
-    camera_id, camera_type, camera_description
-    prev_message_id
+    # location_id, location_lat, location_lon, location_alt
+    # model_id, model_description
+    # camera_id, camera_type, camera_description
+    # prev_message_id
 
     try:
         with open(_cfg_file_path) as file:

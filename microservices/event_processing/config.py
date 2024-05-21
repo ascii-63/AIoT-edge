@@ -1,11 +1,14 @@
 IMAGE_EXTENTION = '.jpg'
 VIDEO_EXTENTION = '.mp4'
 VIDEO_LENGTH_SEC = 2
+ACCEPTABLE_FPS = 12
 
 ENV_FILE_PATH = '.env'
 CFG_FILE_PATH = 'message_config.txt'
+TEMP_VIDEO_DIR = '.videos'
+TEMP_VIDEO_FILE_NAME = 'temp-videos.mp4'
 
-DEFAULT_S3_URL = 'https://[].s3.ap-southeast-1.amazonaws.com/'
+DEFAULT_S3_URL = 'https://[].s3.ap-southeast-1.amazonaws.com'
 BUCKET_BRACKET = '[]'
 
 DEFAULT_LOCAL_RABBITMQ_HOST = '192.168.0.201'
@@ -20,7 +23,8 @@ MAX_MESSAGE_ID = 999999
 PERSON_MESSAGE_FIELD_REMOVE_LIST = [6, 10, 11]
 
 COLON_UNICODE = '%3A'
-
+PERSON_RENAME = 'Human'
+VEHICLE_RENAME = 'Vehicle'
 
 ##########################################
 
