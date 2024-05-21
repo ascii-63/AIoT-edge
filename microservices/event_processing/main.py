@@ -79,38 +79,41 @@ def getTimestampFromMessage(_message: str) -> str:
     return timestamp_str
 
 
-def streamHandle(_timestamp: str) -> bool:
+def streamHandle(_timestamp: str, _get_image: bool, _get_video: bool) -> bool:
     """
     Capture, upload image and video to AWS S3, return `True` if successful
     """
+    image_bytes = None
+    video_path = None
 
-    image_bytes = streams.imageCapture_toBytes()
-    if image_bytes is None:
-        print(">_ None")
-        return False
+    image_des = s3_image_dir + '/' + _timestamp + config.IMAGE_EXTENTION
+    video_des = s3_video_dir + '/' + _timestamp + config.VIDEO_EXTENTION
 
-    # video_file = str(config.TEMP_VIDEO_DIR + '/' + config.TEMP_VIDEO_FILE_NAME)
-    # os.remove(video_file)
+    img_re = False
+    vid_re = False
 
-    # if streams.videoCapture_toFile() == None:
-    #     return False
+    if _get_image:
+        image_bytes = streams.imageCapture_toBytes()
+        if image_bytes is None:
+            return False
+        img_re = cloud.singleBinaryObjectUpload(
+            bucket_name, image_bytes, image_des)
 
-    # if not system.searchFileInDirectory(config.TEMP_VIDEO_DIR, config.TEMP_VIDEO_FILE_NAME):
-    #     return False
+    if _get_video:
+        video_file = streams.videoCapture_toFile(_timestamp)
+        if video_file == None:
+            return False
+        if not system.searchFileInDirectory(config.TEMP_VIDEO_DIR, str(_timestamp+config.VIDEO_EXTENTION)):
+            return False
+        vid_re = cloud.singleVideoFileUpload(
+            bucket_name, video_file, video_des)
+        if vid_re:
+            system.removeTempVideoFileWithTimestamp(_timestamp)
 
-    image_des = s3_image_dir + '/' + _timestamp + '.jpg'
-    video_des = s3_video_dir + '/' + _timestamp + '.mp4'
+    if (_get_image == img_re) and (_get_video == vid_re):
+        return True
 
-    img_re = cloud.singleBinaryObjectUpload(
-        bucket_name, image_bytes, image_des)
-    # vid_re = cloud.singleVideoFileUpload(
-    #     bucket_name, video_file, video_des)
-    vid_re = True
-
-    if (not img_re) or (not vid_re):
-        return False
-
-    return True
+    return False
 
 
 def rawMessageParsing(_raw_msg: str):
@@ -122,34 +125,32 @@ def rawMessageParsing(_raw_msg: str):
     data = json.loads(_raw_msg)
 
     timestamp_str = data["@timestamp"]
-
-    ###########################
-
-    objects_data = data["objects"]
+    events_list = []
     objects_list = []
 
-    for object_str in objects_data:
-        fields = object_str.split('|')
-        object_type = fields[5]
-
-        if object_type == 'Person':
-            fields.pop(config.PERSON_MESSAGE_FIELD_REMOVE_LIST[0])
-            fields.pop(config.PERSON_MESSAGE_FIELD_REMOVE_LIST[1] - 1)
-            fields.pop(config.PERSON_MESSAGE_FIELD_REMOVE_LIST[2] - 2)
-
-            person = Person(*fields)
-            objects_list.append(person)
-        elif object_type == 'Vehicle':
-            pass
-            # vehicle = Vehicle(*fields)
-            # objects_list.append(vehicle)
-
     ###########################
+    try:
+        objects_data = data["objects"]
 
-    # events_data = data["events"]
-    events_list = []
+        for object_str in objects_data:
+            fields = object_str.split('|')
+            object_type = fields[5]
 
-    pass
+            if object_type == 'Person':
+                fields.pop(config.PERSON_MESSAGE_FIELD_REMOVE_LIST[0])
+                fields.pop(config.PERSON_MESSAGE_FIELD_REMOVE_LIST[1] - 1)
+                fields.pop(config.PERSON_MESSAGE_FIELD_REMOVE_LIST[2] - 2)
+
+                person = Person(*fields)
+                objects_list.append(person)
+            elif object_type == 'Vehicle':
+                pass
+                # vehicle = Vehicle(*fields)
+                # objects_list.append(vehicle)
+
+        events_data = data["events"]
+    except Exception as e:
+        pass
 
     ###########################
 
@@ -281,15 +282,18 @@ def messageProcessing():
         timestamp = getTimestampFromMessage(body)
         if timestamp == None:
             return
-        print(f">_____  {timestamp}")
-        if not streamHandle(timestamp):
-            return
+        print(f"\n>_____  {timestamp}")
 
-        print(f">_____ PUB")
+        _, objects, events = rawMessageParsing(body)
+        if not streamHandle(timestamp, (objects is not None), (events is not None)):
+            return
+        print(f">_____ UP")
+
         res = cloud.sendMessage(
             messageGenerator(body), cloud_amqp_url, cloud_queue_name)
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        print(res)
+        if res:
+            print(f">_____ PUB")
 
     # Set up the consumer and specify the callback function
     local_channel.basic_consume(

@@ -2,6 +2,7 @@ import sys
 import os
 from datetime import datetime, timedelta
 
+import config
 
 def searchFileInDirectory(_directory: str, _file_name: str):
     """
@@ -41,3 +42,8 @@ def convertUTC0ToUTC7(timestamp):
     final_timestamp = timestamp_utc7[0:-3]
 
     return final_timestamp
+
+def removeTempVideoFileWithTimestamp(_timestamp:str):
+    """Remove a video file in `config.TEMP_VIDEO_DIR` directory"""
+    video_file_name = str(config.TEMP_VIDEO_DIR + '/' + _timestamp + config.VIDEO_EXTENTION)
+    os.remove(video_file_name)

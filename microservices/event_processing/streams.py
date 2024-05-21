@@ -56,11 +56,11 @@ def videoCapture_toBytesList() -> list:
     return frames_list
 
 
-def videoCapture_toFile() -> str:
+def videoCapture_toFile(_timestamp: str) -> str:
     """Capture video from RTSP stream, write it to file"""
 
     output_file = str(config.TEMP_VIDEO_DIR + '/' +
-                      config.TEMP_VIDEO_FILE_NAME)
+                      _timestamp + config.VIDEO_EXTENTION)
 
     if not stream_capture.isOpened():
         print(f"[ERROR] Stream is not openable: {rtsp_url}\n")
