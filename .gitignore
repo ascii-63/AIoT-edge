@@ -1,5 +1,3 @@
-.engine
-.onnx
 microservices/event_processing/docs/ivsr-aiot-s3_accessKeys.csv
 microservices/event_processing/docs/ivsr-aiot-s3_credentials.csv
 **/*.mp4
