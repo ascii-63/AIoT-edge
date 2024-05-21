@@ -11,8 +11,8 @@ def getImageURL(_timestamp_str: str, _image_url_start: str) -> str:
     image_url = _image_url_start
 
     timestamp_str = system.convertUTC0ToUTC7(_timestamp_str)+'Z'
-    timestamp_str.replace(':', config.COLON_UNICODE)
-    image_url = image_url + timestamp_str + config.IMAGE_EXTENTION
+    timestamp_url = timestamp_str.replace(':', config.COLON_UNICODE)
+    image_url = image_url + timestamp_url + config.IMAGE_EXTENTION
 
     print(image_url)
     return image_url
@@ -24,8 +24,8 @@ def getVideoURL(_timestamp_str: str, _video_url_start: str) -> str:
     video_url = _video_url_start
 
     timestamp_str = system.convertUTC0ToUTC7(_timestamp_str)
-    timestamp_str.replace(':', config.COLON_UNICODE)
-    video_url = video_url + timestamp_str + config.VIDEO_EXTENTION
+    timestamp_url = timestamp_str.replace(':', config.COLON_UNICODE)
+    video_url = video_url + timestamp_url + config.VIDEO_EXTENTION
 
     return video_url
 

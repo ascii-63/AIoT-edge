@@ -280,12 +280,22 @@ def messageProcessing():
     # Define a callback function to process received messages
     def local_callback(ch, method, properties, body):
         timestamp = getTimestampFromMessage(body)
+
         if timestamp == None:
             return
+
+        timestamp = system.convertUTC0ToUTC7(timestamp)
         print(f"\n>_____  {timestamp}")
 
         _, objects, events = rawMessageParsing(body)
-        if not streamHandle(timestamp, (objects is not None), (events is not None)):
+        get_image = False
+        get_video = False
+        if len(objects) != 0:
+            get_image = True
+        if len(events) != 0:
+            get_video = True
+
+        if not streamHandle(timestamp, get_image, get_video):
             return
         print(f">_____ UP")
 
