@@ -6,6 +6,7 @@ from modules import *
 pgie_classes_str = ["Person", "TwoWheeler", "Person", "RoadSign"]
 perf_data = None
 number_sources = None
+global_frame_count = None
 frame_count = {}
 saved_count = {}
 
