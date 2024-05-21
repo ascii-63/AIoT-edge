@@ -566,7 +566,7 @@ def main(args):
 
     factory = GstRtspServer.RTSPMediaFactory.new()
     factory.set_launch(
-        '( udpsrc name=pay0 port=%d buffer-size=524288 caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=(string)%s, payload=96 " )'
+        '( udpsrc name=pay0 port=%d buffer-size=524288 caps="application/x-rtp, media=video, clock-rate=50000, encoding-name=(string)%s, payload=96 " )'
         % (udpsink_port_num, str(config.CODEC))
     )
     factory.set_shared(True)
