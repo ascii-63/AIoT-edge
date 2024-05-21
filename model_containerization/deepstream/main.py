@@ -346,9 +346,11 @@ def main(args):
     if not nvvidconv1:
         sys.stderr.write("[ERROR] Unable to create nvvidconv1 \n")
 
-    caps = Gst.ElementFactory.make("capsfilter", "filter")
-    caps.set_property(
-        "caps", Gst.Caps.from_string("video/x-raw(memory:NVMM), format=I420")
+    caps2 = Gst.ElementFactory.make("capsfilter", "filter2")
+    if not caps2:
+        sys.stderr.write("[ERROR] Unable to get the caps filter2 \n")
+    caps2.set_property(
+        "caps", Gst.Caps.from_string("video/x-raw(memory:NVMM), format=RGBA")
     )
 
     #############################
@@ -415,7 +417,9 @@ def main(args):
         print("Creating H265 Encoder")
     if not encoder:
         sys.stderr.write(" Unable to create encoder")
+
     encoder.set_property("bitrate", int(config.BITRATE))
+
     if is_aarch64():
         encoder.set_property("preset-level", 1)
         encoder.set_property("insert-sps-pps", 1)
@@ -430,16 +434,19 @@ def main(args):
     if not rtppay:
         sys.stderr.write(" Unable to create rtppay")
 
+    #############################
+
     # Set propertie UDP sink for rtsp out
-    updsink_port_num = 5400
+    udpsink_port_num = 5400
     sink = Gst.ElementFactory.make("udpsink", "udpsink")
     if not sink:
         sys.stderr.write("[ERROR] Unable to create udpsink")
-    
+
     sink.set_property("host", "224.224.255.255")
-    sink.set_property("port", updsink_port_num)
+    sink.set_property("port", udpsink_port_num)
     sink.set_property("async", False)
     sink.set_property("sync", 1)
+    sink.set_property("render-delay", int(config.RTSP_OUT_DELAY_USECS))
 
     #############################
 
@@ -484,9 +491,6 @@ def main(args):
 
     #############################
 
-    # sink.set_property("sync", config.SINK_SYNC)
-    # sink.set_property("qos", config.SINK_QOS)
-
     if not is_aarch64():
         # Use CUDA unified memory in the pipeline so frames
         # can be easily accessed on CPU in Python.
@@ -511,7 +515,7 @@ def main(args):
     pipeline.add(tee)
     pipeline.add(queue1)
     pipeline.add(queue2)
-    pipeline.add(caps)
+    pipeline.add(caps2)
     pipeline.add(encoder)
     pipeline.add(rtppay)
     pipeline.add(sink)
@@ -521,14 +525,18 @@ def main(args):
     print("[ INFO] Linking elements in the Pipeline \n")
     streammux.link(pgie)
     pgie.link(nvvidconv1)
-    nvvidconv1.link(caps)
-    caps.link(tiler)
+    nvvidconv1.link(caps2)
+    # nvvidconv1.link(tiler)
+    caps2.link(tiler)
     tiler.link(nvvidconv2)
     nvvidconv2.link(nvosd)
     nvosd.link(tee)
     queue1.link(msgconv)
     msgconv.link(msgbroker)
     queue2.link(encoder)
+    # queue2.link(nvvidconv_postosd)
+    # nvvidconv_postosd.link(caps2)
+    # caps2.link(encoder)
     encoder.link(rtppay)
     rtppay.link(sink)
 
@@ -548,6 +556,7 @@ def main(args):
     bus = pipeline.get_bus()
     bus.add_signal_watch()
     bus.connect("message", bus_call, loop)
+
     #############################
 
     # start steaming
@@ -558,7 +567,7 @@ def main(args):
     factory = GstRtspServer.RTSPMediaFactory.new()
     factory.set_launch(
         '( udpsrc name=pay0 port=%d buffer-size=524288 caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=(string)%s, payload=96 " )'
-        % (updsink_port_num, config.CODEC)
+        % (udpsink_port_num, str(config.CODEC))
     )
     factory.set_shared(True)
     server.get_mount_points().add_factory(config.RTSP_OUT_FACTORY, factory)

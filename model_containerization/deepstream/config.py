@@ -22,7 +22,8 @@ MESSAGE_RATE = 1
 FRAMES_PER_MESSAGE = STREAM_FPS * MESSAGE_RATE
 GST_CAPS_FEATURES_NVMM = "memory:NVMM"
 RTSP_OUT_PORT = 8554
-RTSP_OUT_FACTORY = "/"
+RTSP_OUT_FACTORY = "/out"
+RTSP_OUT_DELAY_USECS = 0
 
 PGIE_CONFIG_FILE = "../model__engine/DeepStream-Yolo/config_infer_primary_yoloV8.txt"
 AMQP_CONFIG_FILE = "amqp_config.txt"
