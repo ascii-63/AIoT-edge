@@ -24,7 +24,7 @@ GST_CAPS_FEATURES_NVMM = "memory:NVMM"
 RTSP_OUT_PORT = 8554
 RTSP_OUT_FACTORY = "/"
 
-PGIE_CONFIG_FILE = "../model__engine/DeepStream-Yolo/config_infer_primary_yoloV5.txt"
+PGIE_CONFIG_FILE = "../model__engine/DeepStream-Yolo/config_infer_primary_yoloV8.txt"
 AMQP_CONFIG_FILE = "amqp_config.txt"
 MSGCONV_CONFIG_FILE = "message_convert_config.txt"
 AMQP_LIB_FILE = "/opt/nvidia/deepstream/deepstream-6.3/lib/libnvds_amqp_proto.so"
