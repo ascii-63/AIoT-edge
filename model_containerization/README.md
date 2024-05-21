@@ -16,5 +16,10 @@ docker run -it --rm --net=host --runtime nvidia \
 -w /opt/nvidia/deepstream/deepstream-6.3/sources/deepstream_python_apps/apps/ds_multi-rtsp_amqp \
 -v /tmp/.X11-unix/:/tmp/.X11-unix ds-yolo-v8:v1.0
 
-sudo python3 main.py [uri] [uri1] [uri2]...
+python3 main.py [uri] [uri1] [uri2]...
+```
+
+## Example
+```bash
+python3 main.py rtsp://admin:ivsr2019@192.168.0.100
 ```
